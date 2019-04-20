@@ -7,4 +7,4 @@ To use the vimrc, please follow the following steps:
 1. put these files in the home folder
 2. install [vim-plug](https://github.com/junegunn/vim-plug)
 3. If you like to use extra source of dictionary and thesaurus, please add them to a folder called supportfiles at home directory. 
-4. all plugins installed are specified in the .vimrc.plug file. Make your change accordingly. 
+4. all plugins installed are specified in the .vimrc.plug file. Make your changes accordingly. 
