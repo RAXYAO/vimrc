@@ -512,75 +512,81 @@ if HasModule("mucomplete")
 endif
 
 
-" " ultisnips
-" if HasDirectory('ultisnips')
-    " " remap Ultisnips for compatibility
-    " " set runtimepath+=$HOME/supportfiles/UltiSnips/
-    " let g:UltiSnipsSnippetsDir = $HOME.'/supportfiles/UltiSnips'
-    " let g:UltiSnipsExpandTrigger = "<tab>"
-    " let g:UltiSnipsJumpForwardTrigger = "<Tab>"
-    " let g:UltiSnipsJumpBackwardTrigger = "<S-Tab>"
-    " let g:UltiSnipsNoPythonWarning = 0
-    " let g:UltiSnipsRemoveSelectModeMappings = 0
-    " " tab for ExpandTrigger
-    " function! g:UltiSnips_Tab(num)
-        " if pumvisible()
-            " call UltiSnips#ExpandSnippet()
-            " if g:ulti_expand_res
-                " return "\<Right>"
-            " else
-                " if exists('v:completed_item') && empty(v:completed_item)
-                    " return "\<C-n>"
-                " else
-                    " return "\<C-y>"
-                " endif
-            " endif
-        " else
-            " call UltiSnips#JumpForwards()
-            " if g:ulti_jump_forwards_res
-                " return "\<Right>"
-            " else
-                " if a:num
-                    " return "\<Tab>"
-                " else
-                    " return "\<Cr>"
-                " endif
-            " endif
-        " endif
-    " endfunction
-    " " au BufEnter * exec "inoremap <silent> <Tab> <C-R>=g:UltiSnips_Tab(1)<cr>"
-    " " au BufEnter * exec "inoremap <silent> <C-j> <C-R>=g:UltiSnips_Tab(0)<cr>"
-    " " smap <C-j> <Tab>
-    " " smap <C-k> <S-Tab>
-    " " neosnippet
-" elseif HasDirectory('neosnippet')
-    " let g:neosnippet#enable_completed_snippet = 1
-    " smap <Tab> <Plug>(neosnippet_jump_or_expand)
-    " smap <C-j> <Plug>(neosnippet_jump_or_expand)
-    " function! g:NeoSnippet_Tab(num)
-        " if pumvisible()
-            " if neosnippet#expandable()
-                " return neosnippet#mappings#expand_impl()
-            " elseif exists("v:completed_item") && empty(v:completed_item)
-                " return "\<C-n>"
-            " else
-                " return "\<C-y>"
-            " endif
-        " else
-            " if neosnippet#jumpable()
-                " return neosnippet#mappings#jump_impl()
-            " else
-                " if a:num
-                    " return "\<Tab>"
-                " else
-                    " return "\<Cr>"
-                " endif
-            " endif
-        " endif
-    " endfunction
-    " au BufEnter * exec "inoremap <silent> <Tab> <C-R>=g:NeoSnippet_Tab(1)<cr>"
-    " au BufEnter * exec "inoremap <silent> <C-j> <C-R>=g:NeoSnippet_Tab(0)<cr>"
-    " " Use honza's snippets.
-    " let g:neosnippet#snippets_directory=$PLUG_PATH.'/vim-snippets/snippets'
-" endif
-" " }
+" ultisnips and nesnippet {
+    if HasDirectory("YouCompleteMe") || HasDirectory("coc.vim") || HasDirectory("ncm2")
+        " let g:loaded_youcompleteme = 1
+        if HasDirectory('ultisnips')
+            if g:python_version == 2
+                let g:UltiSnipsUsePythonVersion = 2
+            elseif g:python_version == 3
+                let g:UltiSnipsUsePythonVersion = 3
+            endif
+            " remap Ultisnips for compatibility
+            let g:UltiSnipsSnippetsDir = $HOME.'/supportfiles/UltiSnips'
+            let g:UltiSnipsSnippetDirectories=[$HOME.'/supportfiles/UltiSnips', "UltiSnips"]
+            let g:UltiSnipsExpandTrigger = "<Tab>"
+            let g:UltiSnipsNoPythonWarning = 0
+            let g:UltiSnipsRemoveSelectModeMappings = 0
+            " tab for ExpandTrigger
+            function! g:UltiSnips_Tab(num)
+                if pumvisible()
+                    call UltiSnips#ExpandSnippet()
+                    if g:ulti_expand_res
+                        return "\<Right>"
+                    else
+                        if exists('v:completed_item') && empty(v:completed_item)
+                            return "\<C-n>"
+                        else
+                            return "\<C-y>"
+                        endif
+                    endif
+                else
+                    call UltiSnips#JumpForwards()
+                    if g:ulti_jump_forwards_res
+                        return "\<Right>"
+                    else
+                        if a:num
+                            return "\<Tab>"
+                        else
+                            return "\<Cr>"
+                        endif
+                    endif
+                endif
+            endfunction
+            au BufEnter * exec "inoremap <silent> <Tab> <C-R>=g:UltiSnips_Tab(1)<cr>"
+            au BufEnter * exec "inoremap <silent> <C-j> <C-R>=g:UltiSnips_Tab(0)<cr>"
+            smap <C-j> <Tab>
+            smap <C-k> <S-Tab>
+            " neosnippet
+        elseif HasDirectory('neosnippet')
+            let g:neosnippet#enable_completed_snippet = 1
+            smap <Tab> <Plug>(neosnippet_jump_or_expand)
+            smap <C-j> <Plug>(neosnippet_jump_or_expand)
+            function! g:NeoSnippet_Tab(num)
+                if pumvisible()
+                    if neosnippet#expandable()
+                        return neosnippet#mappings#expand_impl()
+                    elseif exists("v:completed_item") && empty(v:completed_item)
+                        return "\<C-n>"
+                    else
+                        return "\<C-y>"
+                    endif
+                else
+                    if neosnippet#jumpable()
+                        return neosnippet#mappings#jump_impl()
+                    else
+                        if a:num
+                            return "\<Tab>"
+                        else
+                            return "\<Cr>"
+                        endif
+                    endif
+                endif
+            endfunction
+            au BufEnter * exec "inoremap <silent> <Tab> <C-R>=g:NeoSnippet_Tab(1)<cr>"
+            au BufEnter * exec "inoremap <silent> <C-j> <C-R>=g:NeoSnippet_Tab(0)<cr>"
+            " Use honza's snippets.
+            let g:neosnippet#snippets_directory=$PLUG_PATH.'/vim-snippets/snippets'
+        endif
+    endif
+" }
