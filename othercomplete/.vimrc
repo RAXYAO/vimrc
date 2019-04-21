@@ -398,7 +398,7 @@ endif
 " }
 
 " vimiwiki {
-let g:vimwiki_list = [{'path': $HOME.'/SupportFiles/vimwiki/',
+let g:vimwiki_list = [{'path': $HOME.'/supportfiles/vimwiki/',
             \ 'syntax': 'markdown',
             \ 'ext': '.md'}]
 " }

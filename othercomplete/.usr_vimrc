@@ -213,3 +213,15 @@ if HasModule('go')
     au FileType go nmap <leader>co <Plug>(go-coverage)
 endif
 " }
+
+
+" AutoComplPop seting {
+    " autocmd BufEnter * silent! AcpDisable
+    " let g:acp_completeOption = '.,w,b,k'
+    " let g:acp_enableAtStartup = 0
+    " noremap <leader> <f1> AcpDisable
+    " imap <leader> <f1> AcpDisable
+    " noremap <leader> <f2> AcpEnable
+    " imap <leader> <f2> AcpEnable
+" }
+

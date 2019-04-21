@@ -38,6 +38,15 @@
             let g:python3_host_prog = exepath('python3')
         endif
     endif
+    if has('python') && executable('python')
+        let g:python_version = 2
+        if !WINDOWS()
+            silent! python 1
+        endif
+        if v:version == 704 && has('patch774') || v:version >= 800 || has('nvim')
+            let g:python_host_prog = exepath('python')
+        endif
+    endif
 " }
 
 " plug function definition {
@@ -48,7 +57,7 @@
         "'php', 'ruby', 'misc', 'javascript', 'html', 'terminal']
     endif
     let g:complete_snippet = 'ultisnips'  "neosnippet
-    let g:complete_engine = 'mucomplete'
+    let g:complete_engine = 'YCM'
     call add(plug_modules, complete_engine)
     function! HasModule(plug)
         return count(g:plug_modules, a:plug)
@@ -377,6 +386,7 @@
 
         if HasModule('mucomplete')
             Plug 'lifepillar/vim-mucomplete'
+            " Plug 'vim-scripts/AutoComplPop'
         endif
 
         " Python {
