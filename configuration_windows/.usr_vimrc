@@ -1,0 +1,228 @@
+" cd C:\Docs " Change default directory
+" set nofoldenable
+set formatoptions=croqlt
+set ruler  "show current col and row number in the corner
+set number "show current line number
+set relativenumber
+set wrap
+" resize current buffer by +/- 5
+nnoremap <M-left>  :vertical resize -5<cr>
+nnoremap <M-down>  :resize +5<cr>
+nnoremap <M-up>    :resize -5<cr>
+nnoremap <M-right> :vertical resize +5<cr>
+nnoremap <C-Tab>   :bn<CR>
+nmap     <leader>w :retab<cr>:w!<cr>
+nmap     <leader>f :find<cr>
+imap <C-BS> <C-W>
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"file encoding {
+    set fileencodings=utf-8,gb2312,gb18030,gbk,ucs-bom,cp936,latin1
+    set encoding=utf-8
+    set fencs=utf-8,gbk,gb2312,gb18030
+    set termencoding=utf-8
+    setlocal spell spelllang=en_us
+"}
+" Autocmd {
+    if has("autocmd")
+        augroup vimrcEx
+            au!
+            autocmd BufEnter * silent! lcd %:p:h " auto change directory
+            autocmd InsertEnter * se cul         " show current line in light color
+            autocmd BufRead,BufNewFile *.jl  set filetype=julia
+            autocmd VimEnter,BufRead,BufNewFile *.r set filetype=R
+            " gitcommit {
+                " Instead of reverting the cursor to the last position in the buffer, we
+                " set it to the first line when editing a git commit message
+                au FileType gitcommit au! BufEnter COMMIT_EDITMSG call setpos('.', [0, 1, 1, 0])
+            " }
+            " vim {
+                autocmd BufEnter *.vimrc set filetype=vim nospell
+                autocmd FileType vim let b:vcm_tab_complete = 'vim'
+            " }
+            " terminal {
+                au TerminalOpen * if &buftype == 'terminal' | tnoremap <Esc> <C-\><C-N> | endif
+            " }
+            " markdown {
+                autocmd FileType markdown :call <SID>MDSettings()
+                autocmd BufRead,BufNewFile,BufEnter *.md set filetype=markdown
+            " }
+            " latex {
+                autocmd BufRead,BufNewFile *.tex set filetype=tex
+                autocmd BufEnter *.tex set sw=2
+            " }
+            " AMPL {
+                autocmd BufNewFile,BufRead,BufEnter *.mod set filetype=ampl nospell
+                autocmd BufNewFile,BufRead,BufEnter *.dat set filetype=ampl nospell
+                autocmd BufNewFile,BufRead,BufEnter *.run set filetype=ampl nospell
+            " }
+        augroup END
+    endif
+" }
+
+" terminal setting up {
+    set termwinscroll =500000
+" }
+
+" complete setup{
+    " set dictionary+=/usr/share/dict/words
+    set dictionary+=$VIM/supportfiles/words.txt
+    set thesaurus+=$VIM/supportfiles/thesaurus.txt
+    let g:lexical#thesaurus = ['$VIM/supportfiles/thesaurus.txt',]
+    let g:lexical#dictionary = ['$VIM/supportfiles/words.txt',]
+    set complete -=i
+    set complete +=kspell                   " dictionary complete option
+    set completeopt=preview,noinsert,noselect,longest,menuone
+" }
+
+"make and compile setting {
+    map <F10> :w<CR> :!clear; make %:t:r<CR>
+    map <F5> :call CompileRun()<CR><CR>
+    map <C-J> :call CompileBackupRun()<CR><CR>
+    func! CompileRun()
+        exec "w!"
+        if &filetype == 'c'
+            " && %:t:r"
+            exec "!gcc % -o %< && cd %:p:h && %<"
+        elseif &filetype == 'cpp'
+            exec "!g++ % -o %< && cd %:p:h && %:t:r"
+        elseif &filetype == 'java'
+            exec "!javacr.bat %:t:r"
+            " exec "!cd %:p:h && javac -cp %:p:h;%:p:h:h;%:p:h:h:h %:p:h/%:t &&
+            " \ java -cp %:p:h;%:p:h:h;%:p:h:h:h %:t:r"
+            " exec "!cd %:p:h && javac -cp %:p:h:%:p:h:h:%:p:h:h:h %:p:h/%:t && 
+            " \ java -cp %:p:h:%:p:h:h:%:p:h:h:h %:t:r"
+            " exec "!cd %:p:h:h:h:h:h && javac %:p  && 
+            " \ java %:p:h %:p:h:h:h:h:h/data/tinyW.txt"
+        elseif &filetype == 'sh'
+            exec "!time bash %"
+        elseif &filetype == 'python'
+            exec "!python %"
+        elseif &filetype == 'fortran'
+            exec "!gfortran -o %< % && %:t:r"
+        elseif &filetype == 'html'
+            exec "!firefox % &"
+        elseif &filetype == 'go'
+            exec "!go build %<"
+            exec "!time go run %"
+        elseif &filetype == 'ampl'
+            exec "!bash && ampl && include %"
+        elseif (&filetype == 'mkd'||&filetype =='md')
+            " exec "!pandoc -t latex % -o %<.pdf"
+            exec "!pandoc --filter pandoc-crossref pandoc-eqnos -t latex %:t -o %:t:r.pdf ".
+                    \" -V geometry:\"top=2cm, bottom=1.5cm, left=2cm, right=2cm\"".
+                    \" -V colorlinks:\"linkcolor=blue\""
+            " pandoc -F pandoc-crossref -F pandoc-citeproc test.md --bibliography 
+            " \ liao.bib --pdf-engine=pdflatex -o example.pdf
+        endif
+    endfunc
+
+    func! CompileBackupRun()
+        exec "w"
+        if &filetype == 'c'
+            " exec "!tcc % -o %<.exe && %:p:h:h/%<"
+            exec "!gcc % -lpthread -o %<"
+            exec "!time ./%<"
+            "exec !tcc -run %
+        elseif &filetype == "java"
+          " exec "!cd %:p:h:h:h:h:h && javac edu/princeton/cs/algs4/%:t:r.java && 
+          " \ java edu/princeton/cs/algs4/%:t:r < tinyT.txt"
+          " exec "!javac -encoding GBK % && cd %:p:h && 
+          " \ java -Dfile.encoding=GBK %:t:r"
+          exec "!javacr.bat %:t:r"
+        elseif &filetype == 'fortran'
+            exec "!gfortran -fcheck=bounds -o %< % && %:t:r"
+        endif
+    endfunc
+"}
+
+" Fortran setup {
+    let fortran_free_source=1
+    let fortran_do_enddo=1
+    let fortran_have_tabs=1
+    let fortran_more_precise=1
+" }
+
+" pandoc Markdown setup {
+    function! s:MDSettings()
+        " Block math. Look for "$$[anything]$$"
+        syn region math start=/\$\$/ end=/\$\$/
+        " inline math. Look for "$[not $][anything]$"
+        syn match math_block '\$[^$].\{-}\$'
+        " Liquid single line. Look for "{%[anything]%}"
+        syn match liquid '{%.*%}'
+        " Liquid multiline. Look for "{%[anything]%}[anything]{%[anything]%}"
+        syn region highlight_block start='{% highlight .*%}' end='{%.*%}'
+        " Fenced code blocks, used in GitHub Flavored Markdown (GFM)
+        syn region highlight_block start='```' end='```'
+        " " adjust syntax highlighting for LaTeX parts
+        " "   inline formulas:
+        " syntax region Statement oneline matchgroup=Delimiter start="\$" end="\$"
+        "   environments:
+        syntax region Statement matchgroup=Delimiter
+                    \ start="\\begin{.*}" end="\\end{.*}" contains=Statement
+        " "   commands:
+        " syntax region Statement matchgroup=Delimiter start="{" end="}" contains=Statement
+        " syntax include ftplugin/tex.vim
+        "" Actually highlight those regions.
+        hi link math Statement
+        hi link liquid Statement
+        hi link highlight_block Function
+        hi link math_block Function
+        " Markdown Keymap
+        " map <silent> <buffer> <Leader>l :!pandoc -t latex % -o %<.pdf<CR>
+        map <silent> <buffer> <Leader>d :!pandoc -s %:t -o %:t:r.docx <CR><CR>
+        map <silent> <buffer> <leader>l !pandoc --filter pandoc-eqnos -t latex %:t -o %:t:r.pdf ".
+                    \" -V geometry:\"top=2cm, bottom=1.5cm, left=2cm, right=2cm\"".
+                    \" -V colorlinks:\"linkcolor=blue\""
+    endfunction
+" }
+
+" Latex setup {
+    let g:tex_flavor = "latex"
+    let g:tex_conceal = ""
+    let g:vimtex_view_method = 'zathura'
+    " let g:vimtex_view_general_viewer = 'SumatraPDF'
+    let g:vimtex_view_general_options
+          \ = '-reuse-instance -forward-search @tex @line @pdf'
+          \ . ' -inverse-search "gvim --servername ' . v:servername
+          \ . ' --remote-send \"^<C-\^>^<C-n^>'
+          \ . ':drop \%f^<CR^>:\%l^<CR^>:normal\! zzzv^<CR^>'
+          \ . ':execute ''drop '' . fnameescape(''\%f'')^<CR^>'
+          \ . ':\%l^<CR^>:normal\! zzzv^<CR^>'
+          \ . ':call remote_foreground('''.v:servername.''')^<CR^>^<CR^>\""'
+    let g:vimtex_view_general_options_latexmk = '-reuse-instance'
+" }
+
+" GoLang {
+if HasModule('go')
+    let g:go_highlight_functions = 1
+    let g:go_highlight_methods = 1
+    let g:go_highlight_structs = 1
+    let g:go_highlight_operators = 1
+    let g:go_highlight_build_constraints = 1
+    let g:go_fmt_command = "goimports"
+    let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
+    let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
+    au FileType go nmap <Leader>s <Plug>(go-implements)
+    au FileType go nmap <Leader>i <Plug>(go-info)
+    au FileType go nmap <Leader>e <Plug>(go-rename)
+    au FileType go nmap <leader>r <Plug>(go-run)
+    au FileType go nmap <leader>b <Plug>(go-build)
+    au FileType go nmap <leader>t <Plug>(go-test)
+    au FileType go nmap <Leader>gd <Plug>(go-doc)
+    au FileType go nmap <Leader>gv <Plug>(go-doc-vertical)
+    au FileType go nmap <leader>co <Plug>(go-coverage)
+endif
+" }
+
+
+" AutoComplPop seting {
+    " autocmd BufEnter * silent! AcpDisable
+    " let g:acp_completeOption = '.,w,b,k'
+    " let g:acp_enableAtStartup = 0
+    " noremap <leader> <f1> AcpDisable
+    " imap <leader> <f1> AcpDisable
+    " noremap <leader> <f2> AcpEnable
+    " imap <leader> <f2> AcpEnable
+" }
+

@@ -1,0 +1,605 @@
+
+" complete {
+set completeopt-=menu
+set completeopt-=preview
+set completeopt+=menuone
+if v:version == 704  && has('patch774') || v:version >= 800 || has('nvim')
+    set shortmess+=c
+endif
+if HasDirectory("YouCompleteMe")
+    set completeopt+=noinsert,noselect
+    if g:python_version == 2
+        let g:ycm_python_binary_path = 'python2'
+    else
+        let g:ycm_python_binary_path = 'python3'
+    endif
+    " add_preview
+    let g:ycm_add_preview_to_completeopt = 0
+    "  补全后close窗口
+    let g:ycm_autoclose_preview_window_after_completion = 0
+    "  插入后close窗口
+    let g:ycm_autoclose_preview_window_after_insertion = 0
+    let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
+    let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
+    let g:ycm_filetype_blacklist = {
+                \   'tagbar' : 1,
+                \   'nerdtree' : 1,
+                \ }
+    let g:ycm_confirm_extra_conf = 1 "加载.ycm_extra_conf.py提示
+    let g:ycm_global_ycm_extra_conf = $PLUG_PATH."/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py"
+    let g:ycm_collect_identifiers_from_tags_files = 1    " 开启 YC基于标签引擎
+    let g:ycm_min_num_of_chars_for_completion = 2   " 从第2个键入字符就开始罗列匹配项
+    let g:ycm_seed_identifiers_with_syntax = 1   " 语法关键字补全
+    let g:ycm_complete_in_comments = 0
+    let g:ycm_complete_in_strings = 1
+    let g:ycm_collect_identifiers_from_comments_and_strings = 0
+    let g:ycm_show_diagnostics_ui = 0
+    let g:ycm_key_invoke_completion = '<C-space>'
+    let g:ycm_semantic_triggers =  {
+                \   'c' : ['->', '.'],
+                \   'objc' : ['->', '.', 're!\[[_a-zA-Z]+\w*\s', 're!^\s*[^\W\d]\w*\s',
+                \             're!\[.*\]\s'],
+                \   'ocaml' : ['.', '#'],
+                \   'cpp,objcpp' : ['->', '.', '::'],
+                \   'perl' : ['->'],
+                \   'php' : ['->', '::'],
+                \   'cs,java,javascript,typescript,d,python,perl6,scala,vb,elixir,go' : ['.'],
+                \   'ruby' : ['.', '::'],
+                \   'lua' : ['.', ':'],
+                \   'erlang' : [':'],
+                \ }
+    let g:ycm_semantic_triggers =  {
+                \   'c,cpp,python,java,go,erlang,perl': ['re!\w{2}'],
+                \   'cs,lua,javascript': ['re!\w{2}'],
+                \ }
+    " enable completion from tags
+    let g:ycm_collect_identifiers_from_tags_files = 1
+    nnoremap <M-O>  :YcmCompleter GoToDefinitionElseDeclaration<CR>
+    nnoremap <M-o>= :sp<CR>:YcmCompleter GoToDefinitionElseDeclaration<CR>
+    nnoremap <M-o>\ :vs<CR>:YcmCompleter GoToDefinitionElseDeclaration<CR>
+    nnoremap <M-o>t :YcmCompleter GoToType<CR>
+    nnoremap <M-o>d :YcmCompleter GoToDeclaration<CR>
+    nnoremap <M-o>r :YcmCompleter GoToReferences<CR>
+    nnoremap <M-o>g :YcmCompleter GoTo<CR>
+    nnoremap <M-o>i :YcmCompleter GoToInclude<CR>
+    nnoremap <M-o>p :YcmCompleter GetParent<CR>
+    nnoremap <M-o><Space> :YcmCompleter GetType<CR>
+elseif HasDirectory("coc.nvim")
+    set completeopt+=noinsert,noselect,preview,menuone
+    nmap <M-O>  <Plug>(coc-definition)
+    nmap <M-o>= :sp<CR>:execute "normal \<Plug>(coc-definition)"<Cr>
+    nmap <M-o>\ :vs<CR>:execute "normal \<Plug>(coc-definition)"<Cr>
+    nmap <M-o>t <Plug>(coc-type-definition)
+    nmap <M-o>r <Plug>(coc-references)
+    nmap <M-o>i <Plug>(coc-implementation)
+    nmap <M-o>c :CocCommand<Cr>
+    nmap <M-o>l :CocList<Cr>
+    nmap <M-o>n :CocNext<Cr>
+    nmap <M-o>p :CocPrev<Cr>
+    nmap <C-l><C-p> :lprev<cr>
+    nmap <C-l><C-n> :lnext<cr>
+    let g:coc_snippetknext = '<C-n>'
+    let g:coc_snippet_prev = '<C-p>'
+    " Show signature help while editing
+    au CursorHoldI * silent! call CocAction('showSignatureHelp')
+    " Use `:Format` for format current buffer
+    command! -nargs=0 Format :call CocAction('format')
+    " Use `:Fold` for fold current buffer
+    command! -nargs=? Fold :call CocAction('fold', <f-args>)
+elseif HasDirectory('ncm2')
+    au BufEnter * call ncm2#enable_for_buffer()
+    set completeopt+=noinsert,noselect
+    au User Ncm2Plugin call ncm2#register_source({
+                \   'name' : 'html',
+                \   'enable' : 1,
+                \   'priority': 9,
+                \   'subscope_enable': 1,
+                \   'scope': ['htm','html', 'markdown'],
+                \   'mark': 'html',
+                \   'word_pattern': '[\w\-]+',
+                \   'complete_pattern': ':\s*',
+                \   'on_complete': ['ncm2#on_complete#omni', 'htmlcomplete#CompleteTags']
+                \ })
+    au User Ncm2Plugin call ncm2#register_source({
+                \   'name' : 'css',
+                \   'enable' : 1,
+                \   'priority': 9,
+                \   'subscope_enable': 1,
+                \   'scope': ['css','scss'],
+                \   'mark': 'css',
+                \   'word_pattern': '[\w\-]+',
+                \   'complete_pattern': ':\s*',
+                \   'on_complete': ['ncm2#on_complete#omni', 'csscomplete#CompleteCSS']
+                \ })
+    if HasDirectory('ncm2-jc2')
+        au User Ncm2Plugin call ncm2#register_source({
+                    \   'name' : 'java',
+                    \   'enable' : 1,
+                    \   'priority': 9,
+                    \   'subscope_enable': 1,
+                    \   'scope': ['java','class'],
+                    \   'mark': 'java',
+                    \   'word_pattern': '[\w\-]+',
+                    \   'complete_pattern': '.\s*',
+                    \   'on_complete': ['ncm2#on_complete#omni', 'javacomplete#Complete']
+                    \ })
+    endif
+    " LCN for ncm2
+    if HasDirectory('LanguageClient-neovim')
+        let g:LanguageClient_diagnosticsEnable = 0
+        let g:LanguageClient_serverCommands = {}
+        if executable('pyls')
+            let g:LanguageClient_serverCommands.python = ['pyls']
+            autocmd FileType python setlocal omnifunc=LanguageClient#complete
+        endif
+        if HasPlug('javascript') && executable('javascript-typescript-stdio')
+            let g:LanguageClient_serverCommands.javascript = ['javascript-typescript-stdio']
+            let g:LanguageClient_serverCommands.typescript = ['javascript-typescript-stdio']
+            autocmd FileType javascript setlocal omnifunc=LanguageClient#complete
+        endif
+        if HasPlug('go') && executable('go-langserver')
+            let g:LanguageClient_serverCommands.go = ['go-langserver']
+            autocmd FileType go setlocal omnifunc=LanguageClient#complete
+        endif
+        if HasPlug('rust') && executable('rustup') && executable('rls')
+            let g:LanguageClient_serverCommands.rust = ['rustup', 'run', 'stable', 'rls']
+            autocmd FileType rust setlocal omnifunc=LanguageClient#complete
+        endif
+        if HasPlug('c')
+            if executable('ccls')
+                let g:LanguageClient_serverCommands = {
+                            \ 'c': ['ccls'],
+                            \ 'cpp': ['ccls'],
+                            \ 'objc': ['ccls'],
+                            \ }
+                autocmd FileType c,cpp,objc setlocal omnifunc=LanguageClient#complete
+            elseif executable('cquery')
+                let g:LanguageClient_serverCommands = {
+                            \ 'c': ['cquery', '--log-file=/tmp/cquery.log'],
+                            \ 'cpp': ['cquery', '--log-file=/tmp/cquery.log'],
+                            \ 'objc': ['cquery', '--log-file=/tmp/cquery.log'],
+                            \ }
+                autocmd FileType c,cpp,objc setlocal omnifunc=LanguageClient#complete
+            endif
+        endif
+        nnoremap <M-O>  :call LanguageClient#textDocument_definition()<CR>
+        nnoremap <M-o>= :sp<CR>:call LanguageClient#textDocument_definition()<CR>
+        nnoremap <M-o>\ :vs<CR>:call LanguageClient#textDocument_definition()<CR>
+        nnoremap <M-o>t :call LanguageClient#textDocument_typeDefinition()<CR>
+        nnoremap <M-o>r :call LanguageClient#textDocument_references()<CR>
+        nnoremap <M-o>h :call LanguageClient#textDocument_hover()<CR>
+        nnoremap <M-o>l :call LanguageClient_contextMenu()<CR>
+        nnoremap <M-o>n :call LanguageClient#textDocument_rename()<CR>
+        nnoremap <M-o>i :call LanguageClient#textDocument_implementation()<CR>
+        nnoremap <M-o>s :call LanguageClient#textDocument_documentSymbol(()<CR>
+    endif
+elseif HasDirectory("asyncomplete.vim")
+    set completeopt+=noinsert,noselect,preview,menuone
+    autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
+    imap <C-space> <Plug>(asyncomplete_force_refresh)
+    inoremap <silent><expr> <TAB>
+                \ pumvisible() ? "\<C-n>" :
+                \ <SID>check_back_space() ? "\<TAB>" :
+                \ asyncomplete#force_refresh()
+    inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+    let g:asyncomplete_auto_popup = 1
+    if g:python_version == 3 || has("lua")
+        let g:asyncomplete_smart_completion = 1
+    else
+        let g:asyncomplete_smart_completion = 0
+    endif
+    autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
+    nnoremap <M-O>  :LspDefinition<CR>
+    nnoremap <M-o>= :sp<CR>:LspDefinition<CR>
+    nnoremap <M-o>\ :vs<CR>:LspDefinition<CR>
+    nnoremap <M-o>t :LspTypeDefinition<CR>
+    nnoremap <M-o>d :LspDeclaration<CR>
+    nnoremap <M-o>h :LspHover<CR>
+    nnoremap <M-o>n :LspRename<CR>
+    nnoremap <M-o>r :LspReferences<CR>
+    nnoremap <M-o>i :LspImplementation<CR>
+    nnoremap <M-o>s :LspWorkspaceSymbol<CR>
+    au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#buffer#get_source_options({
+                \ 'name': 'buffer',
+                \ 'whitelist': ['*'],
+                \ 'completor': function('asyncomplete#sources#buffer#completor'),
+                \ }))
+    au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#file#get_source_options({
+                \ 'name': 'file',
+                \ 'whitelist': ['*'],
+                \ 'priority': 10,
+                \ 'completor': function('asyncomplete#sources#file#completor')
+                \ }))
+    au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#omni#get_source_options({
+                \ 'name': 'omni',
+                \ 'whitelist': ['*'],
+                \ 'blacklist': ['c', 'cpp', 'html'],
+                \ 'completor': function('asyncomplete#sources#omni#completor')
+                \ }))
+    au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#necosyntax#get_source_options({
+                \ 'name': 'necosyntax',
+                \ 'whitelist': ['*'],
+                \ 'completor': function('asyncomplete#sources#necosyntax#completor'),
+                \ }))
+    au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#necovim#get_source_options({
+                \ 'name': 'necovim',
+                \ 'whitelist': ['vim'],
+                \ 'completor': function('asyncomplete#sources#necovim#completor'),
+                \ }))
+    if HasDirectory("asyncomplete-ultisnips.vim")
+        au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#ultisnips#get_source_options({
+                    \ 'name': 'ultisnips',
+                    \ 'whitelist': ['*'],
+                    \ 'completor': function('asyncomplete#sources#ultisnips#completor')
+                    \ }))
+    elseif HasDirectory("asyncomplete-neosnippet.vim")
+        au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#neosnippet#get_source_options({
+                    \ 'name': 'neosnippet',
+                    \ 'whitelist': ['*'],
+                    \ 'completor': function('asyncomplete#sources#neosnippet#completor')
+                    \ }))
+    endif
+    if HasDirectory('asyncomplete-tags.vim')
+        au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#tags#get_source_options({
+                    \ 'name': 'tags',
+                    \ 'whitelist': ['*'],
+                    \ 'completor': function('asyncomplete#sources#tags#completor'),
+                    \ 'config': {
+                    \    'max_file_size': 50000000,
+                    \  },
+                    \ }))
+    endif
+    " python
+    if executable('pyls')
+        au User lsp_setup call lsp#register_server({
+                    \ 'name': 'pyls',
+                    \ 'cmd': {server_info->['pyls']},
+                    \ 'whitelist': ['python'],
+                    \ })
+    endif
+    " go
+    if HasPlug('go')
+        if HasDirectory('asyncomplete-gocode.vim')
+            au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#gocode#get_source_options({
+                        \ 'name': 'gocode',
+                        \ 'whitelist': ['go'],
+                        \ 'completor': function('asyncomplete#sources#gocode#completor'),
+                        \ 'config': {
+                        \    'gocode_path': 'gocode'
+                        \  },
+                        \ }))
+        elseif executable('gopls')
+            au User lsp_setup call lsp#register_server({
+                        \ 'name': 'gopls',
+                        \ 'cmd': {server_info->['gopls', '-mode', 'stdio']},
+                        \ 'whitelist': ['go'],
+                        \ })
+        elseif executable('go-langserver')
+            au User lsp_setup call lsp#register_server({
+                        \ 'name': 'go-langserver',
+                        \ 'cmd': {server_info->['go-langserver', '-gocodecompletion']},
+                        \ 'whitelist': ['go'],
+                        \ })
+        elseif executable('bingo')
+            au User lsp_setup call lsp#register_server({
+                        \ 'name': 'bingo',
+                        \ 'cmd': {server_info->['bingo', '-mode', 'stdio']},
+                        \ 'whitelist': ['go'],
+                        \ })
+        endif
+    endif
+    " rust
+    if HasPlug('rust')
+        if HasDirectory('asyncomplete-racer.vim')
+            au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#racer#get_source_options({
+                        \ 'name': 'racer',
+                        \ 'whitelist': ['rust'],
+                        \ 'completor': function('asyncomplete#sources#racer#completor'),
+                        \ 'config': {
+                        \   'racer_path': 'racer'
+                        \ },
+                        \ }))
+        elseif executable('rls') && has('nvim-0.2.0')
+            au User lsp_setup call lsp#register_server({
+                        \ 'name': 'rls',
+                        \ 'cmd': {server_info->['rustup', 'run', 'stable', 'rls']},
+                        \ 'whitelist': ['rust'],
+                        \ })
+        endif
+    endif
+    " c
+    if HasPlug('c')
+        if executable('clangd') && has('nvim-0.2.0')
+            au User lsp_setup call lsp#register_server({
+                        \ 'name': 'clangd',
+                        \ 'cmd': {server_info->['clangd']},
+                        \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp'],
+                        \ })
+        elseif executable('ccls')
+            au User lsp_setup call lsp#register_server({
+                        \ 'name': 'ccls',
+                        \ 'cmd': {server_info->['ccls']},
+                        \ 'root_uri': {server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'compile_commands.json'))},
+                        \ 'initialization_options': {},
+                        \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp', 'cc'],
+                        \ })
+        elseif executable('cquery')
+            au User lsp_setup call lsp#register_server({
+                        \ 'name': 'cquery',
+                        \ 'cmd': {server_info->['cquery']},
+                        \ 'root_uri': {server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'compile_commands.json'))},
+                        \ 'initialization_options': { 'cacheDirectory': '/path/to/cquery/cache' },
+                        \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp', 'cc'],
+                        \ })
+        endif
+    endif
+    " javascript
+    if HasPlug('javascript')
+        if HasDirectory('vim-lsp-typescript')
+            au User lsp_setup call lsp#register_server({
+                        \ 'name': 'javascript support using typescript-language-server',
+                        \ 'cmd': { server_info->[&shell, &shellcmdflag, 'typescript-language-server --stdio']},
+                        \ 'root_uri': { server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_directory(lsp#utils#get_buffer_path(), '.git/..'))},
+                        \ 'whitelist': ['javascript', 'javascript.jsx', 'typescript', 'typescript.tsx'],
+                        \ })
+        elseif executable('flow')
+            au User lsp_setup call lsp#register_server({
+                        \ 'name': 'flow',
+                        \ 'cmd': {server_info->['flow', 'lsp']},
+                        \ 'root_uri': { server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_directory(lsp#utils#get_buffer_path(), '.git/..'))},
+                        \ 'whitelist': ['javascript', 'javascript.jsx'],
+                        \ })
+        elseif executable('flow-language-server')
+            au User lsp_setup call lsp#register_server({
+                        \ 'name': 'flow-language-server',
+                        \ 'cmd': { server_info->[&shell, &shellcmdflag, 'flow-language-server --stdio']},
+                        \ 'root_uri': { server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_directory(lsp#utils#get_buffer_path(), '.git/..'))},
+                        \ 'whitelist': ['javascript', 'javascript.jsx'],
+                        \ })
+        endif
+    endif
+    " lua
+    if executable('lua-lsp')
+        au User lsp_setup call lsp#register_server({
+                    \ 'name': 'lua-lsp',
+                    \ 'cmd': {server_info->[&shell, &shellcmdflag, 'lua-lsp']},
+                    \ 'whitelist': ['lua'],
+                    \ })
+    endif
+    " rudy
+    if executable('solargraph')
+        " gem install solargraph
+        au User lsp_setup call lsp#register_server({
+                    \ 'name': 'solargraph',
+                    \ 'cmd': {server_info->[&shell, &shellcmdflag, 'solargraph stdio']},
+                    \ 'initialization_options': {"diagnostics": "true"},
+                    \ 'whitelist': ['ruby'],
+                    \ })
+    endif
+    " css
+    if executable('css-languageserver')
+        au User lsp_setup call lsp#register_server({
+                    \ 'name': 'css-languageserver',
+                    \ 'cmd': {server_info->[&shell, &shellcmdflag, 'css-languageserver --stdio']},
+                    \ 'whitelist': ['css', 'less', 'sass'],
+                    \ })
+    endif
+    " docker
+    if executable('docker-langserver')
+        au User lsp_setup call lsp#register_server({
+                    \ 'name': 'docker-langserver',
+                    \ 'cmd': {server_info->[&shell, &shellcmdflag, 'docker-langserver --stdio']},
+                    \ 'whitelist': ['dockerfile'],
+                    \ })
+    endif
+elseif HasDirectory("neocomplete.vim")
+    " ominifuc
+    if g:python_version == 2
+        au FileType python setlocal omnifunc=pythoncomplete#Complete
+    elseif g:python_version == 3
+        au FileType python setlocal omnifunc=python3complete#Complete
+    endif
+    au FileType css           setlocal omnifunc=csscomplete#CompleteCSS
+    au FileType xml           setlocal omnifunc=xmlcomplete#CompleteTags
+    au FileType javascript    setlocal omnifunc=javascriptcomplete#CompleteJS
+    au FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+    let g:neocomplete#enable_at_startup = 1
+    let g:neocomplete#enable_smart_case = 1
+    let g:neocomplete#enable_auto_select = 0
+    let g:neocomplete#enable_camel_case = 1
+    let g:neocomplete#enable_auto_delimiter = 0
+    let g:neocomplete#force_overwrite_completefunc = 1
+    " <BS>: close popup and delete backword char.
+    inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
+    " Enable heavy omni completion.
+    if !exists('g:neocomplete#force_omni_input_patterns')
+        let g:neocomplete#force_omni_input_patterns = {}
+    endif
+    let g:neocomplete#force_omni_input_patterns.java = '[^. \t]\.\w*'
+    let g:neocomplete#force_omni_input_patterns.php  = '[^. \t]->\h\w*\|\h\w*::'
+    let g:neocomplete#force_omni_input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
+    let g:neocomplete#force_omni_input_patterns.c    = '[^.[:digit:] *\t]\%(\.\|->\)'
+    let g:neocomplete#force_omni_input_patterns.cpp  = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+    let g:neocomplete#force_omni_input_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
+    let g:neocomplete#force_omni_input_patterns.go   = '\h\w*\.\?'
+elseif HasDirectory("neocomplcache.vim")
+    let g:neocomplcache_enable_at_startup = 1
+    " ominifuc
+    if g:python_version == 2
+        au FileType python setlocal omnifunc=pythoncomplete#Complete
+    elseif g:python_version == 3
+        au FileType python setlocal omnifunc=python3complete#Complete
+    endif
+    au FileType css           setlocal omnifunc=csscomplete#CompleteCSS
+    au FileType xml           setlocal omnifunc=xmlcomplete#CompleteTags
+    au FileType javascript    setlocal omnifunc=javascriptcomplete#CompleteJS
+    au FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+    let g:neocomplcache_enable_insert_char_pre       = 1
+    let g:neocomplcache_enable_at_startup            = 1
+    let g:neocomplcache_enable_auto_select           = 0
+    let g:neocomplcache_enable_camel_case_completion = 1
+    let g:neocomplcache_enable_smart_case            = 1
+    let g:neocomplcache_enable_auto_delimiter        = 0
+    let g:neocomplcache_force_overwrite_completefunc = 1
+    " <BS>: close popup and delete backword char.
+    inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
+    " Enable heavy omni completion.
+    if !exists('g:neocomplcache_omni_patterns')
+        let g:neocomplcache_omni_patterns = {}
+    endif
+    let g:neocomplcache_omni_patterns.java = '[^. \t]\.\w*'
+    let g:neocomplcache_omni_patterns.php  = '[^. \t]->\h\w*\|\h\w*::'
+    let g:neocomplcache_omni_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
+    let g:neocomplcache_omni_patterns.c    = '[^.[:digit:] *\t]\%(\.\|->\)'
+    let g:neocomplcache_omni_patterns.cpp  = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+    let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
+    let g:neocomplcache_omni_patterns.go   = '\h\w*\.\?'
+endif
+" }    
+if HasModule("mucomplete")
+    set shortmess+=c   " Shut off completion messages
+    set belloff+=ctrlg " If Vim beeps during completion
+    set completeopt+=longest
+    let g:mucomplete#enable_auto_at_startup = 1
+    let g:mucomplete#completion_delay = 1
+    let g:mucomplete#chains = {
+                \ 'default' : ['path', 'ulti', 'dict', 'omni', 'keyn', 'uspl'],
+                \ }
+
+    if HasDirectory('jedi-vim')
+        let g:jedi#popup_on_dot = 1  " It may be 1 as well
+    endif
+
+    if HasDirectory('ultisnips')
+        let g:UltiSnipsSnippetsDir=$VIM.'/supportfiles/UltiSnips'
+        let g:UltiSnipsExpandTrigger = "<f5>"        " Do not use <tab>
+        let g:UltiSnipsJumpForwardTrigger = "<c-b>"  " Do not use <c-j>
+        imap <silent> <expr> <space> pumvisible()
+                    \ ? "<space>"
+                    \ : "<c-r>=AutoPairsSpace()<cr>"
+        inoremap <silent> <expr> <plug>UltiExpand
+                    \ mucomplete#ultisnips#expand_snippet("\<cr>")
+        imap <cr> <plug>MyCR
+
+        " let g:ulti_expand_or_jump_res = 0
+        " fun! TryUltiSnips()
+        " if !pumvisible() " With the pop-up menu open, let Tab move down
+        " call UltiSnips#ExpandSnippetOrJump()
+        " endif
+        " return ''
+        " endf
+
+        " fun! TryMUcomplete()
+        " return g:ulti_expand_or_jump_res ? "" : "\<plug>(MUcompleteFwd)"
+        " endf
+        " inoremap <plug>(TryUlti) <c-r>=TryUltiSnips()<cr>
+        " imap <expr> <silent> <plug>(TryMU) TryMUcomplete()
+        " imap <expr> <silent> <tab> "\<plug>(TryUlti)\<plug>(TryMU)"
+    endif
+
+    if HasDirectory('auto-paris')
+        let g:AutoPairsMapCR = 0
+        let g:AutoPairsMapSpace = 0
+        imap <silent> <expr> <space> pumvisible()
+                    \ ? "<space>"
+                    \ : "<c-r>=AutoPairsSpace()<cr>"
+
+        inoremap <silent> <expr> <plug>UltiExpand
+                    \ mucomplete#ultisnips#expand_snippet("\<cr>")
+        imap <plug>MyCR <plug>UltiExpand<plug>AutoPairsReturn
+        imap <cr> <plug>MyCR
+    endif
+endif
+
+
+" ultisnips and nesnippet {
+    if HasDirectory("YouCompleteMe") || HasDirectory("asyncomplete") || HasDirectory("ncm2")
+        " complete_snippet
+        if g:complete_engine == "YCM" || g:complete_engine == "asyncomplete"
+            imap <expr><Cr>  pumvisible()? "\<C-[>a":"\<CR>"
+        else
+            imap <expr><Cr>  pumvisible()? "\<C-y>":"\<CR>"
+        endif
+        inoremap <expr> <Up>       pumvisible() ? "\<C-p>"                  : "\<Up>"
+        inoremap <expr> <Down>     pumvisible() ? "\<C-n>"                  : "\<Down>"
+        inoremap <expr> <PageUp>   pumvisible() ? "\<PageUp>\<C-p>\<C-n>"   : "\<PageUp>"
+        inoremap <expr> <PageDown> pumvisible() ? "\<PageDown>\<C-n>\<C-p>" : "\<PageDown>"
+        " let g:loaded_youcompleteme = 1
+        if HasDirectory('ultisnips')
+            " remap Ultisnips for compatibility
+            if g:python_version == 2
+                let g:UltiSnipsUsePythonVersion = 2
+            elseif g:python_version == 3
+                let g:UltiSnipsUsePythonVersion = 3
+            endif
+            let g:UltiSnipsNoPythonWarning = 0
+            let g:UltiSnipsRemoveSelectModeMappings = 0
+            let g:UltiSnipsExpandTrigger = "<Nop>"
+            let g:UltiSnipsListSnippets = "<Nop>"
+            let g:UltiSnipsJumpForwardTrigger = "<Tab>"
+            let g:UltiSnipsJumpBackwardTrigger = "<S-Tab>"
+            let g:UltiSnipsSnippetsDir = $VIM.'/supportfiles/UltiSnips'
+            let g:UltiSnipsSnippetDirectories=[$VIM.'/supportfiles/UltiSnips', "UltiSnips"]
+            " tab for ExpandTrigger
+            function! g:UltiSnips_Tab(num)
+                if pumvisible()
+                    call UltiSnips#ExpandSnippet()
+                    if g:ulti_expand_res
+                        return "\<Right>"
+                    else
+                        if exists('v:completed_item') && empty(v:completed_item)
+                            return "\<C-n>"
+                        else
+                            return "\<C-y>"
+                        endif
+                    endif
+                else
+                    call UltiSnips#JumpForwards()
+                    if g:ulti_jump_forwards_res
+                        return "\<Right>"
+                    else
+                        if a:num
+                            return "\<Tab>"
+                        else
+                            return "\<Cr>"
+                        endif
+                    endif
+                endif
+            endfunction
+            au BufEnter * exec "inoremap <silent> <Tab> <C-R>=g:UltiSnips_Tab(1)<cr>"
+            au BufEnter * exec "inoremap <silent> <C-j> <C-R>=g:UltiSnips_Tab(0)<cr>"
+            smap <C-j> <Tab>
+            smap <C-k> <S-Tab>
+            " neosnippet
+        elseif HasDirectory('neosnippet')
+            let g:neosnippet#enable_completed_snippet = 1
+            smap <Tab> <Plug>(neosnippet_jump_or_expand)
+            smap <C-j> <Plug>(neosnippet_jump_or_expand)
+            function! g:NeoSnippet_Tab(num)
+                if pumvisible()
+                    if neosnippet#expandable()
+                        return neosnippet#mappings#expand_impl()
+                    elseif exists("v:completed_item") && empty(v:completed_item)
+                        return "\<C-n>"
+                    else
+                        return "\<C-y>"
+                    endif
+                else
+                    if neosnippet#jumpable()
+                        return neosnippet#mappings#jump_impl()
+                    else
+                        if a:num
+                            return "\<Tab>"
+                        else
+                            return "\<Cr>"
+                        endif
+                    endif
+                endif
+            endfunction
+            au BufEnter * exec "inoremap <silent> <Tab> <C-R>=g:NeoSnippet_Tab(1)<cr>"
+            au BufEnter * exec "inoremap <silent> <C-j> <C-R>=g:NeoSnippet_Tab(0)<cr>"
+            " Use honza's snippets.
+            let g:neosnippet#snippets_directory=$PLUG_PATH.'/vim-snippets/snippets'
+        endif
+    endif
+" }
