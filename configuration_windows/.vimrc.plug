@@ -53,7 +53,7 @@
     " In your .vimrc.before.local file
     " list only the plugin groups you will use
     if !exists('g:plug_modules')
-        let g:plug_modules=['general', 'writing', 'programming', 'java', 'python','markdown']
+        let g:plug_modules=['general', 'writing', 'programming', 'java', 'python']
         "'php', 'ruby', 'misc', 'javascript', 'html', 'terminal']
     endif
     let g:complete_snippet = 'ultisnips'  "neosnippet
@@ -93,10 +93,7 @@
         if HasModule('general')
             Plug 'altercation/vim-colors-solarized'
             Plug 'mhinz/vim-startify', {'branch': 'master'}
-            Plug 'sheerun/vim-polyglot', {'branch': 'master'}
-            Plug 'sbdchd/neoformat', {'branch': 'master'}
             Plug 'scrooloose/nerdtree'
-            Plug 'spf13/vim-colors'
             Plug 'tpope/vim-surround'
             Plug 'jiangmiao/auto-pairs'
             Plug 'ctrlpvim/ctrlp.vim'
@@ -105,6 +102,9 @@
             Plug 'vim-scripts/matchit.zip'
             Plug 'Yggdroot/indentLine'
             Plug 'skywind3000/asyncrun.vim'
+            " Plug 'spf13/vim-colors'
+            " Plug 'sheerun/vim-polyglot', {'branch': 'master'}
+            " Plug 'sbdchd/neoformat', {'branch': 'master'}
             " Plug 'tpope/vim-abolish', {'branch': 'master'}
             " Plug 'tpope/vim-unimpaired', {'branch': 'master'}
             " Plug 'leshill/vim-json', {'branch': 'master'}
@@ -124,6 +124,8 @@
             Plug 'bling/vim-bufferline'
             Plug 'jistr/vim-nerdtree-tabs'
             Plug 'mbbill/undotree'
+            " Plug 'kana/vim-textobj-user'
+            " Plug 'kana/vim-textobj-indent'
             if !exists('g:spf13_no_views')
                 Plug 'vim-scripts/restore_view.vim'
             endif
@@ -133,8 +135,6 @@
             " Plug 'nathanaelkane/vim-indent-guides'
             " Plug 'tpope/vim-abolish.vim'
             " Plug 'osyo-manga/vim-over'
-            " Plug 'kana/vim-textobj-user'
-            " Plug 'kana/vim-textobj-indent'
             " Plug 'gcmt/wildfire.vim'
         endif
         " }
@@ -146,9 +146,10 @@
             Plug 'lervag/vimtex'
             Plug 'SirVer/ultisnips'
             Plug 'honza/vim-snippets'
-            Plug 'reedes/vim-textobj-quote'
+            " Plug 'reedes/vim-textobj-quote'
             " Plug 'reedes/vim-litecorrect'
             " Plug 'reedes/vim-textobj-sentence'
+            " Plug 'tpope/vim-markdown', {'for':'markdown', 'branch': 'master'}
             " Plug 'reedes/vim-lexical'
             " Plug 'reedes/vim-wordy'
             " Plug 'ujihisa/neco-look'

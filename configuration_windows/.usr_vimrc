@@ -43,7 +43,7 @@ imap <C-BS> <C-W>
                 au TerminalOpen * if &buftype == 'terminal' | tnoremap <Esc> <C-\><C-N> | endif
             " }
             " markdown {
-                autocmd FileType markdown :call <SID>MDSettings()
+                " autocmd FileType markdown :call <SID>MDSettings()
                 autocmd BufRead,BufNewFile,BufEnter *.md set filetype=markdown
             " }
             " latex {
@@ -67,8 +67,6 @@ imap <C-BS> <C-W>
     " set dictionary+=/usr/share/dict/words
     set dictionary+=$VIM/supportfiles/words.txt
     set thesaurus+=$VIM/supportfiles/thesaurus.txt
-    let g:lexical#thesaurus = ['$VIM/supportfiles/thesaurus.txt',]
-    let g:lexical#dictionary = ['$VIM/supportfiles/words.txt',]
     set complete -=i
     set complete +=kspell                   " dictionary complete option
     set completeopt=preview,noinsert,noselect,longest,menuone
@@ -142,40 +140,40 @@ imap <C-BS> <C-W>
     let fortran_more_precise=1
 " }
 
-" pandoc Markdown setup {
-    function! s:MDSettings()
-        " Block math. Look for "$$[anything]$$"
-        syn region math start=/\$\$/ end=/\$\$/
-        " inline math. Look for "$[not $][anything]$"
-        syn match math_block '\$[^$].\{-}\$'
-        " Liquid single line. Look for "{%[anything]%}"
-        syn match liquid '{%.*%}'
-        " Liquid multiline. Look for "{%[anything]%}[anything]{%[anything]%}"
-        syn region highlight_block start='{% highlight .*%}' end='{%.*%}'
-        " Fenced code blocks, used in GitHub Flavored Markdown (GFM)
-        syn region highlight_block start='```' end='```'
-        " " adjust syntax highlighting for LaTeX parts
-        " "   inline formulas:
-        " syntax region Statement oneline matchgroup=Delimiter start="\$" end="\$"
-        "   environments:
-        syntax region Statement matchgroup=Delimiter
-                    \ start="\\begin{.*}" end="\\end{.*}" contains=Statement
-        " "   commands:
-        " syntax region Statement matchgroup=Delimiter start="{" end="}" contains=Statement
-        " syntax include ftplugin/tex.vim
-        "" Actually highlight those regions.
-        hi link math Statement
-        hi link liquid Statement
-        hi link highlight_block Function
-        hi link math_block Function
-        " Markdown Keymap
-        " map <silent> <buffer> <Leader>l :!pandoc -t latex % -o %<.pdf<CR>
-        map <silent> <buffer> <Leader>d :!pandoc -s %:t -o %:t:r.docx <CR><CR>
-        map <silent> <buffer> <leader>l !pandoc --filter pandoc-eqnos -t latex %:t -o %:t:r.pdf ".
-                    \" -V geometry:\"top=2cm, bottom=1.5cm, left=2cm, right=2cm\"".
-                    \" -V colorlinks:\"linkcolor=blue\""
-    endfunction
-" }
+" " pandoc Markdown setup {
+    " function! s:MDSettings()
+        " " Block math. Look for "$$[anything]$$"
+        " syn region math start=/\$\$/ end=/\$\$/
+        " " inline math. Look for "$[not $][anything]$"
+        " syn match math_block '\$[^$].\{-}\$'
+        " " Liquid single line. Look for "{%[anything]%}"
+        " syn match liquid '{%.*%}'
+        " " Liquid multiline. Look for "{%[anything]%}[anything]{%[anything]%}"
+        " syn region highlight_block start='{% highlight .*%}' end='{%.*%}'
+        " " Fenced code blocks, used in GitHub Flavored Markdown (GFM)
+        " syn region highlight_block start='```' end='```'
+        " " " adjust syntax highlighting for LaTeX parts
+        " " "   inline formulas:
+        " " syntax region Statement oneline matchgroup=Delimiter start="\$" end="\$"
+        " "   environments:
+        " syntax region Statement matchgroup=Delimiter
+                    " \ start="\\begin{.*}" end="\\end{.*}" contains=Statement
+        " " "   commands:
+        " " syntax region Statement matchgroup=Delimiter start="{" end="}" contains=Statement
+        " " syntax include ftplugin/tex.vim
+        " "" Actually highlight those regions.
+        " hi link math Statement
+        " hi link liquid Statement
+        " hi link highlight_block Function
+        " hi link math_block Function
+        " " Markdown Keymap
+        " " map <silent> <buffer> <Leader>l :!pandoc -t latex % -o %<.pdf<CR>
+        " map <silent> <buffer> <Leader>d :!pandoc -s %:t -o %:t:r.docx <CR><CR>
+        " map <silent> <buffer> <leader>l !pandoc --filter pandoc-eqnos -t latex %:t -o %:t:r.pdf ".
+                    " \" -V geometry:\"top=2cm, bottom=1.5cm, left=2cm, right=2cm\"".
+                    " \" -V colorlinks:\"linkcolor=blue\""
+    " endfunction
+" " }
 
 " Latex setup {
     let g:tex_flavor = "latex"
