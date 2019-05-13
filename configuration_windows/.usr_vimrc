@@ -1,20 +1,60 @@
-" cd C:\Docs " Change default directory
-" set nofoldenable
-set formatoptions=croqlt
-set ruler  "show current col and row number in the corner
-set number "show current line number
-set relativenumber
-set wrap
-" resize current buffer by +/- 5
-nnoremap <M-left>  :vertical resize -5<cr>
-nnoremap <M-down>  :resize +5<cr>
-nnoremap <M-up>    :resize -5<cr>
-nnoremap <M-right> :vertical resize +5<cr>
-nnoremap <C-Tab>   :bn<CR>
-nmap     <leader>w :retab<cr>:w!<cr>
-nmap     <leader>f :find<cr>
-imap <C-BS> <C-W>
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" cd C:\Users\xyao24\Documents\Docs " Change default directory
+" Key (re)Mappings {
+    " The default leader is '\', but many people prefer ',' as it's in a standard
+    " location. To override this behavior and set it back to '\' (or any other
+    " character) add the following to your .vimrc.before.local file:
+    if !exists('g:spf13_leader')
+        let mapleader = ';'
+    else
+        let mapleader=g:spf13_leader
+    endif
+    if !exists('g:spf13_localleader')
+        let maplocalleader = '\'
+    else
+        let maplocalleader=g:spf13_localleader
+    endif
+
+    if !exists('g:spf13_no_easyWindows')
+        map <C-J> <C-W>j<C-W>_
+        map <C-K> <C-W>k<C-W>_
+        map <C-L> <C-W>l<C-W>_
+        map <C-H> <C-W>h<C-W>_
+    endif
+
+    " Wrapped lines goes down/up to next row, rather than next line in file.
+    noremap j gj
+    noremap k gk
+
+
+    " Code folding options
+    nmap <leader>f0 :set foldlevel=0<CR>
+    nmap <leader>f1 :set foldlevel=1<CR>
+    nmap <leader>f2 :set foldlevel=2<CR>
+    nmap <leader>f3 :set foldlevel=3<CR>
+    nmap <leader>f4 :set foldlevel=4<CR>
+    nmap <leader>f5 :set foldlevel=5<CR>
+    nmap <leader>f6 :set foldlevel=6<CR>
+    nmap <leader>f7 :set foldlevel=7<CR>
+    nmap <leader>f8 :set foldlevel=8<CR>
+    nmap <leader>f9 :set foldlevel=9<CR>
+
+    " Easier horizontal scrolling
+    map zl zL
+    map zh zH
+
+    " Easier formatting
+    nnoremap <silent> <leader>q gwip
+    " resize current buffer by +/- 5
+    nnoremap <M-left>  :vertical resize -5<cr>
+    nnoremap <M-down>  :resize +5<cr>
+    nnoremap <M-up>    :resize -5<cr>
+    nnoremap <M-right> :vertical resize +5<cr>
+    nnoremap <C-Tab>   :bn<CR>
+    nmap     <leader>w :retab<cr> :call StripTrailingWhitespace()<cr> :noh<cr>:w!<cr>
+    nmap     <leader>f :find<cr>
+    imap <C-BS> <C-W>
+" }
+
 "file encoding {
     set fileencodings=utf-8,gb2312,gb18030,gbk,ucs-bom,cp936,latin1
     set encoding=utf-8
@@ -22,40 +62,45 @@ imap <C-BS> <C-W>
     set termencoding=utf-8
     setlocal spell spelllang=en_us
 "}
+
 " Autocmd {
     if has("autocmd")
-        augroup vimrcEx
-            au!
-            autocmd BufEnter * silent! lcd %:p:h " auto change directory
-            autocmd InsertEnter * se cul         " show current line in light color
-            autocmd BufRead,BufNewFile *.jl  set filetype=julia
-            autocmd VimEnter,BufRead,BufNewFile *.r set filetype=R
-            " gitcommit {
-                " Instead of reverting the cursor to the last position in the buffer, we
-                " set it to the first line when editing a git commit message
-                au FileType gitcommit au! BufEnter COMMIT_EDITMSG call setpos('.', [0, 1, 1, 0])
-            " }
-            " vim {
-                autocmd BufEnter *.vimrc set filetype=vim nospell
-                autocmd FileType vim let b:vcm_tab_complete = 'vim'
-            " }
-            " terminal {
-                au TerminalOpen * if &buftype == 'terminal' | tnoremap <Esc> <C-\><C-N> | endif
-            " }
-            " markdown {
-                " autocmd FileType markdown :call <SID>MDSettings()
-                autocmd BufRead,BufNewFile,BufEnter *.md set filetype=markdown
-            " }
-            " latex {
-                autocmd BufRead,BufNewFile *.tex set filetype=tex
-                autocmd BufEnter *.tex set sw=2
-            " }
-            " AMPL {
-                autocmd BufNewFile,BufRead,BufEnter *.mod set filetype=ampl nospell
-                autocmd BufNewFile,BufRead,BufEnter *.dat set filetype=ampl nospell
-                autocmd BufNewFile,BufRead,BufEnter *.run set filetype=ampl nospell
-            " }
-        augroup END
+      augroup vimrcEx
+          au!
+          autocmd VimEnter,BufRead,BufNewFile * setlocal textwidth=80
+          autocmd VimEnter,BufRead,BufNewFile * setlocal wrapmargin=2
+          autocmd BufEnter * silent! lcd %:p:h " auto change directory
+          autocmd InsertEnter * se cul         " show current line in light color
+          autocmd BufRead,BufNewFile *.jl  set filetype=julia
+          autocmd VimEnter,BufRead,BufNewFile *.r set filetype=R
+          " gitcommit {
+              " Instead of reverting the cursor to the last position in the buffer, we
+              " set it to the first line when editing a git commit message
+              au FileType gitcommit au! BufEnter COMMIT_EDITMSG call setpos('.', [0, 1, 1, 0])
+          " }
+          " vim {
+              autocmd BufEnter *.vimrc set filetype=vim nospell
+              autocmd FileType vim let b:vcm_tab_complete = 'vim'
+          " }
+          " terminal {
+              au TerminalOpen * if &buftype == 'terminal' | tnoremap <Esc> <C-\><C-N> | endif
+          " }
+          " markdown {
+              " autocmd FileType markdown :call <SID>MDSettings()
+              autocmd BufRead,BufNewFile,BufEnter *.md set filetype=markdown
+          " }
+          " latex {
+              autocmd BufRead,BufNewFile *.tex set filetype=tex
+              " autocmd VimEnter,BufRead,BufNewFile *.tex setlocal textwidth=80
+              " autocmd VimEnter,BufRead,BufNewFile *.tex setlocal wrapmargin=2
+              " autocmd BufEnter *.tex set sw=2
+          " }
+          " AMPL {
+              autocmd BufNewFile,BufRead,BufEnter *.mod set filetype=ampl nospell
+              autocmd BufNewFile,BufRead,BufEnter *.dat set filetype=ampl nospell
+              autocmd BufNewFile,BufRead,BufEnter *.run set filetype=ampl nospell
+          " }
+      augroup END
     endif
 " }
 
@@ -68,28 +113,71 @@ imap <C-BS> <C-W>
     set dictionary+=$VIM/supportfiles/words.txt
     set thesaurus+=$VIM/supportfiles/thesaurus.txt
     set complete -=i
-    set complete +=kspell                   " dictionary complete option
-    set completeopt=preview,noinsert,noselect,longest,menuone
+    " set complete +=kspell                   " dictionary complete option
+    " set completeopt=preview,noinsert,noselect,longest,menuone
+" }
+
+" Terminal setup  {
+    if has('terminal')
+        tnoremap <expr> <C-R> '<C-\><C-N>"'.nr2char(getchar()).'pi'
+        tnoremap <C-[> <C-\><C-n>
+        tnoremap <ESC> <C-\><C-n>
+        tnoremap <M-h> <C-\><C-n><c-w>h
+        tnoremap <M-l> <C-\><C-n><c-w>l
+        tnoremap <M-j> <C-\><C-n><c-w>j
+        tnoremap <M-k> <C-\><C-n><c-w>k
+        tnoremap <M-H> <C-\><C-n><c-w>H
+        tnoremap <M-L> <C-\><C-n><c-w>L
+        tnoremap <M-J> <C-\><C-n><c-w>J
+        tnoremap <M-K> <C-\><C-n><c-w>K
+        if has('nvim')
+            if WINDOWS()
+                nmap <M-b>\ :vsplit term://cmd<cr>i
+                nmap <M-b>= :split  term://cmd<cr>i
+                nmap <M-b>t :tabe   term://cmd<cr>i
+            else
+                nmap <M-b>\ :vsplit term://bash<cr>i
+                nmap <M-b>= :split  term://bash<cr>i
+                nmap <M-b>t :tabe   term://bash<cr>i
+            endif
+            nmap <leader>b\ :vsplit term://
+            nmap <leader>b= :split  term://
+            nmap <leader>bt :tabe   term://
+        else
+            if WINDOWS()
+                nmap <M-b>\ :vertical terminal<cr>cmd<cr>
+                nmap <M-b>= :terminal<cr>cmd<cr>
+                nmap <M-b>t :tab terminal<Cr>cmd<Cr>
+            else
+                nmap <M-b>\ :vertical terminal<cr>bash<cr>
+                nmap <M-b>= :terminal<cr>bash<cr>
+                nmap <M-b>t :tab terminal<Cr>bash<Cr>
+            endif
+            nmap <leader>b\ :vertical terminal
+            nmap <leader>b= :terminal
+            nmap <leader>bt :tab terminal
+        endif
+    endif
 " }
 
 "make and compile setting {
     map <F10> :w<CR> :!clear; make %:t:r<CR>
-    map <F5> :call CompileRun()<CR><CR>
-    map <C-J> :call CompileBackupRun()<CR><CR>
+    map <F5> :call CompileRun()<CR>
+    " map <C-J> :call CompileBackupRun()<CR><CR>
     func! CompileRun()
         exec "w!"
         if &filetype == 'c'
             " && %:t:r"
-            exec "!gcc % -o %< && cd %:p:h && %<"
+            exec "!gcc % -o %< && cd %:p:h && ./%<"
         elseif &filetype == 'cpp'
             exec "!g++ % -o %< && cd %:p:h && %:t:r"
         elseif &filetype == 'java'
             exec "!javacr.bat %:t:r"
             " exec "!cd %:p:h && javac -cp %:p:h;%:p:h:h;%:p:h:h:h %:p:h/%:t &&
             " \ java -cp %:p:h;%:p:h:h;%:p:h:h:h %:t:r"
-            " exec "!cd %:p:h && javac -cp %:p:h:%:p:h:h:%:p:h:h:h %:p:h/%:t && 
+            " exec "!cd %:p:h && javac -cp %:p:h:%:p:h:h:%:p:h:h:h %:p:h/%:t &&
             " \ java -cp %:p:h:%:p:h:h:%:p:h:h:h %:t:r"
-            " exec "!cd %:p:h:h:h:h:h && javac %:p  && 
+            " exec "!cd %:p:h:h:h:h:h && javac %:p  &&
             " \ java %:p:h %:p:h:h:h:h:h/data/tinyW.txt"
         elseif &filetype == 'sh'
             exec "!time bash %"
@@ -104,12 +192,12 @@ imap <C-BS> <C-W>
             exec "!time go run %"
         elseif &filetype == 'ampl'
             exec "!bash && ampl && include %"
-        elseif (&filetype == 'mkd'||&filetype =='md')
-            " exec "!pandoc -t latex % -o %<.pdf"
-            exec "!pandoc --filter pandoc-crossref pandoc-eqnos -t latex %:t -o %:t:r.pdf ".
-                    \" -V geometry:\"top=2cm, bottom=1.5cm, left=2cm, right=2cm\"".
-                    \" -V colorlinks:\"linkcolor=blue\""
-            " pandoc -F pandoc-crossref -F pandoc-citeproc test.md --bibliography 
+        " elseif (&filetype == 'mkd'||&filetype =='md')
+            " " exec "!pandoc -t latex % -o %<.pdf"
+            " exec "!pandoc --filter pandoc-crossref pandoc-eqnos -t latex %:t -o %:t:r.pdf ".
+                    " \" -V geometry:\"top=2cm, bottom=1.5cm, left=2cm, right=2cm\"".
+                    " \" -V colorlinks:\"linkcolor=blue\""
+            " pandoc -F pandoc-crossref -F pandoc-citeproc test.md --bibliography
             " \ liao.bib --pdf-engine=pdflatex -o example.pdf
         endif
     endfunc
@@ -122,9 +210,9 @@ imap <C-BS> <C-W>
             exec "!time ./%<"
             "exec !tcc -run %
         elseif &filetype == "java"
-          " exec "!cd %:p:h:h:h:h:h && javac edu/princeton/cs/algs4/%:t:r.java && 
+          " exec "!cd %:p:h:h:h:h:h && javac edu/princeton/cs/algs4/%:t:r.java &&
           " \ java edu/princeton/cs/algs4/%:t:r < tinyT.txt"
-          " exec "!javac -encoding GBK % && cd %:p:h && 
+          " exec "!javac -encoding GBK % && cd %:p:h &&
           " \ java -Dfile.encoding=GBK %:t:r"
           exec "!javacr.bat %:t:r"
         elseif &filetype == 'fortran'
@@ -140,46 +228,50 @@ imap <C-BS> <C-W>
     let fortran_more_precise=1
 " }
 
-" " pandoc Markdown setup {
-    " function! s:MDSettings()
-        " " Block math. Look for "$$[anything]$$"
-        " syn region math start=/\$\$/ end=/\$\$/
-        " " inline math. Look for "$[not $][anything]$"
-        " syn match math_block '\$[^$].\{-}\$'
-        " " Liquid single line. Look for "{%[anything]%}"
-        " syn match liquid '{%.*%}'
-        " " Liquid multiline. Look for "{%[anything]%}[anything]{%[anything]%}"
-        " syn region highlight_block start='{% highlight .*%}' end='{%.*%}'
-        " " Fenced code blocks, used in GitHub Flavored Markdown (GFM)
-        " syn region highlight_block start='```' end='```'
-        " " " adjust syntax highlighting for LaTeX parts
-        " " "   inline formulas:
-        " " syntax region Statement oneline matchgroup=Delimiter start="\$" end="\$"
-        " "   environments:
-        " syntax region Statement matchgroup=Delimiter
-                    " \ start="\\begin{.*}" end="\\end{.*}" contains=Statement
-        " " "   commands:
-        " " syntax region Statement matchgroup=Delimiter start="{" end="}" contains=Statement
-        " " syntax include ftplugin/tex.vim
-        " "" Actually highlight those regions.
-        " hi link math Statement
-        " hi link liquid Statement
-        " hi link highlight_block Function
-        " hi link math_block Function
-        " " Markdown Keymap
-        " " map <silent> <buffer> <Leader>l :!pandoc -t latex % -o %<.pdf<CR>
-        " map <silent> <buffer> <Leader>d :!pandoc -s %:t -o %:t:r.docx <CR><CR>
-        " map <silent> <buffer> <leader>l !pandoc --filter pandoc-eqnos -t latex %:t -o %:t:r.pdf ".
-                    " \" -V geometry:\"top=2cm, bottom=1.5cm, left=2cm, right=2cm\"".
-                    " \" -V colorlinks:\"linkcolor=blue\""
-    " endfunction
-" " }
+" pandoc Markdown setup {
+    function! s:MDSettings()
+        " Block math. Look for "$$[anything]$$"
+        syn region math start=/\$\$/ end=/\$\$/
+        " inline math. Look for "$[not $][anything]$"
+        syn match math_block '\$[^$].\{-}\$'
+        " Liquid single line. Look for "{%[anything]%}"
+        syn match liquid '{%.*%}'
+        " Liquid multiline. Look for "{%[anything]%}[anything]{%[anything]%}"
+        syn region highlight_block start='{% highlight .*%}' end='{%.*%}'
+        " Fenced code blocks, used in GitHub Flavored Markdown (GFM)
+        syn region highlight_block start='```' end='```'
+        " " adjust syntax highlighting for LaTeX parts
+        " "   inline formulas:
+        " syntax region Statement oneline matchgroup=Delimiter start="\$" end="\$"
+        "   environments:
+        syntax region Statement matchgroup=Delimiter
+                    \ start="\\begin{.*}" end="\\end{.*}" contains=Statement
+        " "   commands:
+        " syntax region Statement matchgroup=Delimiter start="{" end="}" contains=Statement
+        " syntax include ftplugin/tex.vim
+        "" Actually highlight those regions.
+        hi link math Statement
+        hi link liquid Statement
+        hi link highlight_block Function
+        hi link math_block Function
+        " Markdown Keymap
+        " map <silent> <buffer> <Leader>l :!pandoc -t latex % -o %<.pdf<CR>
+        map <silent> <buffer> <Leader>d :!pandoc -s %:t -o %:t:r.docx <CR><CR>
+        map <silent> <buffer> <leader>l !pandoc --filter pandoc-eqnos -t latex %:t -o %:t:r.pdf ".
+                    \" -V geometry:\"top=2cm, bottom=1.5cm, left=2cm, right=2cm\"".
+                    \" -V colorlinks:\"linkcolor=blue\""
+    endfunction
+" }
 
 " Latex setup {
     let g:tex_flavor = "latex"
     let g:tex_conceal = ""
-    let g:vimtex_view_method = 'zathura'
-    " let g:vimtex_view_general_viewer = 'SumatraPDF'
+    if LINUX()
+      let g:vimtex_view_method = 'zathura'
+    elseif WINDOWS()
+      let g:vimtex_view_general_viewer = 'SumatraPDF'
+    endif
+
     let g:vimtex_view_general_options
           \ = '-reuse-instance -forward-search @tex @line @pdf'
           \ . ' -inverse-search "gvim --servername ' . v:servername
@@ -192,25 +284,25 @@ imap <C-BS> <C-W>
 " }
 
 " GoLang {
-if HasModule('go')
-    let g:go_highlight_functions = 1
-    let g:go_highlight_methods = 1
-    let g:go_highlight_structs = 1
-    let g:go_highlight_operators = 1
-    let g:go_highlight_build_constraints = 1
-    let g:go_fmt_command = "goimports"
-    let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
-    let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
-    au FileType go nmap <Leader>s <Plug>(go-implements)
-    au FileType go nmap <Leader>i <Plug>(go-info)
-    au FileType go nmap <Leader>e <Plug>(go-rename)
-    au FileType go nmap <leader>r <Plug>(go-run)
-    au FileType go nmap <leader>b <Plug>(go-build)
-    au FileType go nmap <leader>t <Plug>(go-test)
-    au FileType go nmap <Leader>gd <Plug>(go-doc)
-    au FileType go nmap <Leader>gv <Plug>(go-doc-vertical)
-    au FileType go nmap <leader>co <Plug>(go-coverage)
-endif
+  if HasModule('go')
+      let g:go_highlight_functions = 1
+      let g:go_highlight_methods = 1
+      let g:go_highlight_structs = 1
+      let g:go_highlight_operators = 1
+      let g:go_highlight_build_constraints = 1
+      let g:go_fmt_command = "goimports"
+      let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
+      let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
+      au FileType go nmap <Leader>s <Plug>(go-implements)
+      au FileType go nmap <Leader>i <Plug>(go-info)
+      au FileType go nmap <Leader>e <Plug>(go-rename)
+      au FileType go nmap <leader>r <Plug>(go-run)
+      au FileType go nmap <leader>b <Plug>(go-build)
+      au FileType go nmap <leader>t <Plug>(go-test)
+      au FileType go nmap <Leader>gd <Plug>(go-doc)
+      au FileType go nmap <Leader>gv <Plug>(go-doc-vertical)
+      au FileType go nmap <leader>co <Plug>(go-coverage)
+  endif
 " }
 
 
@@ -223,4 +315,461 @@ endif
     " noremap <leader> <f2> AcpEnable
     " imap <leader> <f2> AcpEnable
 " }
+
+
+" Plugins {
+  " colorscheme {
+    if HasDirectory("vim-colors-solarized/")
+        let g:solarized_termcolors=256
+        let g:solarized_termtrans=1
+        let g:solarized_contrast="normal"
+        let g:solarized_visibility="normal"
+        color solarized             " Load a colorscheme
+    endif
+  " }
+
+  " statusline {
+    if has('statusline')
+      if HasDirectory("lightline.vim")
+        function! LightlineReadonly()
+            return &readonly && &filetype !=# 'help' ? 'RO' : ''
+        endfunction
+        let g:lightline = {
+                    \ 'component': {
+                    \   'filefullpath': '%F',
+                    \   'lineinfo': '%l/%L : %c'
+                    \ },
+                    \ 'component_function': {
+                    \   'gitbranch': 'fugitive#head',
+                    \   'readonly': 'LightlineReadonly'
+                    \ },
+                    \ }
+        if HasDirectory('tagbar')
+            let g:lightline.component.tagbar = '%{tagbar#currenttag("%s", "", "f")}'
+            let g:lightline.active = {
+                        \ 'left': [
+                        \     ['mode', 'paste'],
+                        \     ['gitbranch', 'readonly'],
+                        \     ['filefullpath', 'modified'],
+                        \     ['tagbar'],
+                        \ ]
+                        \ }
+        else
+            let g:lightline.active = {
+                        \ 'left': [
+                        \     ['mode', 'paste'],
+                        \     ['gitbranch', 'readonly'],
+                        \     ['filefullpath', 'modified']
+                        \ ]
+                        \ }
+        endif
+        if g:syntax_tool == 'coc' && HasDirectory("coc.nvim")
+            let g:lightline.component_function.cocstatus = 'coc#status'
+            let g:lightline.active.right = [
+                        \ ['percent'],
+                        \ ['cocstatus', 'filetype', 'fileformat', 'fileencoding', 'lineinfo']
+                        \ ]
+        elseif HasDirectory("lightline-neomake") && HasDirectory('neomake')
+            let g:lightline.component_expand =  {
+                        \ 'linter_infos': 'lightline#neomake#infos',
+                        \ 'linter_errors': 'lightline#neomake#errors',
+                        \ 'linter_warnings': 'lightline#neomake#warnings',
+                        \ 'linter_ok': 'lightline#neomake#ok'
+                        \ }
+            let g:lightline.component_type = {
+                        \ 'linter_infos': 'right',
+                        \ 'linter_errors': 'error',
+                        \ 'linter_warnings': 'warning',
+                        \ 'linter_ok': 'left'
+                        \ }
+            let g:lightline.active.right = [
+                        \ ['percent'],
+                        \ ['filetype', 'fileformat', 'fileencoding', 'lineinfo'],
+                        \ ['linter_infos', 'linter_errors', 'linter_warnings', 'linter_ok']
+                        \ ]
+        elseif HasDirectory("lightline-ale") && HasDirectory('ale')
+            let g:lightline.component_expand =  {
+                        \ 'linter_checking': 'lightline#ale#checking',
+                        \ 'linter_errors': 'lightline#ale#errors',
+                        \ 'linter_warnings': 'lightline#ale#warnings',
+                        \ 'linter_ok': 'lightline#ale#ok'
+                        \ }
+            let g:lightline.component_type = {
+                        \ 'linter_checking': 'right',
+                        \ 'linter_errors': 'error',
+                        \ 'linter_warnings': 'warning',
+                        \ 'linter_ok': 'left'
+                        \ }
+            let g:lightline.active.right = [
+                        \ ['percent'],
+                        \ ['filetype', 'fileformat', 'fileencoding', 'lineinfo'],
+                        \ ['linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok']
+                        \ ]
+        else
+            let g:lightline.active.right = [
+                        \ ['percent'],
+                        \ ['filetype', 'fileformat', 'fileencoding', 'lineinfo']
+                        \ ]
+        endif
+      else
+          set statusline=%1*%{exists('g:loaded_fugitive')?fugitive#statusline():''}%*
+          set statusline+=%2*\ %F\ %*
+          set statusline+=%3*\ \ %m%r%y\ %*
+          set statusline+=%=%4*\ %{&ff}\ \|\ %{\"\".(&fenc==\"\"?&enc:&fenc).((exists(\"+bomb\")\ &&\ &bomb)?\",B\":\"\").\"\ \|\"}\ %-14.(%l\/%L\ %c%)%*
+          set statusline+=%5*\ %P\ %<
+          hi User1 cterm=bold ctermfg=232 ctermbg=179
+          hi User2 cterm=bold ctermfg=255 ctermbg=100
+          hi User3 cterm=None ctermfg=208 ctermbg=238
+          hi User4 cterm=None ctermfg=246 ctermbg=237
+          hi User5 cterm=None ctermfg=250 ctermbg=238
+      endif
+    endif
+  " }
+
+  " " TextObj Sentence {
+      " if HasModule('writing')
+          " augroup textobj_sentence
+              " autocmd!
+              " autocmd FileType markdown call textobj#sentence#init()
+              " autocmd FileType textile call textobj#sentence#init()
+              " autocmd FileType text call textobj#sentence#init()
+          " augroup END
+      " endif
+  " " }
+
+  " " TextObj Quote {
+      " if HasModule('writing')
+          " augroup textobj_quote
+              " autocmd!
+              " autocmd FileType markdown call textobj#quote#init()
+              " autocmd FileType textile call textobj#quote#init()
+              " autocmd FileType text call textobj#quote#init({'educate': 0})
+          " augroup END
+      " endif
+  " " }
+
+  " Misc {
+      if HasDirectory("nerdtree")
+          let g:NERDShutUp=1
+      endif
+
+      if HasDirectory("matchit.zip")
+          let b:match_ignorecase = 1
+      endif
+  " }
+
+  " vimiwiki {
+      let g:vimwiki_list = [{'path': $VIM.'/supportfiles/vimwiki/',
+                  \ 'syntax': 'markdown',
+                  \ 'ext': '.md'}]
+  " }
+
+  " EasyAlign {
+      " Start interactive EasyAlign in visual mode (e.g. vipga)
+      xmap ga <Plug>(EasyAlign)
+      " Start interactive EasyAlign for a motion/text object (e.g. gaip)
+      nmap ga <Plug>(EasyAlign)
+  " }
+
+
+  " NerdCommenter {
+      let g:NERDCustomDelimiters = { 'c': { 'left': '//','right': '' } }
+      " Add one space after the delimiter
+      let g:NERDSpaceDelims=1
+  " }
+
+  " NerdTree {
+      " Initialize NERDTree as needed {
+          function! NERDTreeInitAsNeeded()
+              redir => bufoutput
+              buffers!
+              redir END
+              let idx = stridx(bufoutput, "NERD_tree")
+              if idx > -1
+                  NERDTreeMirror
+                  NERDTreeFind
+                  wincmd l
+              endif
+          endfunction
+      " }
+      if HasDirectory("nerdtree")
+          map <C-e> <plug>NERDTreeTabsToggle<CR>
+          map <leader>e :NERDTreeFind<CR>
+          nmap <leader>nt :NERDTreeFind<CR>
+          let g:NERDShutUp                            = 1
+          let s:has_nerdtree                          = 1
+          let g:nerdtree_tabs_open_on_gui_startup     = 0
+          let g:nerdtree_tabs_open_on_console_startup = 0
+          let g:nerdtree_tabs_smart_startup_focus     = 2
+          let g:nerdtree_tabs_focus_on_files          = 1
+          let g:NERDTreeWinSize                       = 30
+          let g:NERDTreeShowBookmarks                 = 1
+          let g:nerdtree_tabs_smart_startup_focus     = 0
+          let g:NERDTreeChDirMode                     = 1
+          let g:NERDTreeQuitOnOpen                    = 1
+          let g:NERDTreeMouseMode                     = 2
+          let g:NERDTreeShowHidden                    = 1
+          let g:NERDTreeKeepTreeInNewTab              = 1
+          let g:nerdtree_tabs_focus_on_files          = 1
+          let g:nerdtree_tabs_open_on_gui_startup     = 0
+          let g:NERDTreeDirArrowExpandable            = '▸'
+          let g:NERDTreeDirArrowCollapsible           = '▾'
+          let g:NERDTreeIgnore                        = ['\.py[cd]$', '\~$', '\.swo$', '\.swp$', '^\.git$', '^\.hg$', '^\.svn$', '\.bzr$']
+      endif
+
+      if HasDirectory("nerdtree-git-plugin/")
+          let g:NERDTreeIndicatorMapCustom = {
+                      \ "Modified"  : "*",
+                      \ "Staged"    : "+",
+                      \ "Untracked" : "★",
+                      \ "Renamed"   : "→ ",
+                      \ "Unmerged"  : "=",
+                      \ "Deleted"   : "X",
+                      \ "Dirty"     : "●",
+                      \ "Clean"     : "√",
+                      \ "Unknown"   : "?"
+                      \ }
+      endif
+  " }
+
+  " Startify {
+    if HasDirectory("vim-startify")
+        let g:startify_session_dir = expand("$VIM/supportfilese/session")
+        let g:startify_files_number = 10
+        let g:startify_session_number = 10
+        let g:startify_list_order = [
+                    \  ['   最近项目:'],
+                    \  'sessions',
+                    \  ['   最近文件:'],
+                    \  'files',
+                    \  ['   快捷命令:'],
+                    \  'commands',
+                    \  ['   常用书签:'],
+                    \  'bookmarks',
+                    \ ]
+        let g:startify_commands = [
+                    \  {'h': ['帮助', 'help howto']},
+                    \  {'v': ['版本', 'version']},
+                    \  {'w': ['wiki', 'VimwikiIndex']}
+                    \ ]
+    endif
+  " }
+
+  " AsyncRun {
+    if HasDirectory('asyncrun.vim')
+        autocmd BufEnter * set errorformat&
+        let g:asyncrun_rootmarks = ['.svn', '.git', '.root', '_darcs', 'build.xml']
+        function! s:ASYNC_RUN()
+            exec "w"
+            call asyncrun#quickfix_toggle(8,1)
+            if &filetype == 'c'
+                exec ":AsyncRun g++ % -o %<"
+                exec ":AsyncRun -raw=1 ./%<"
+            elseif &filetype == 'cpp'
+                exec ":AsyncRun g++ % -o %<"
+                exec ":AsyncRun -raw=1 ./%<"
+            elseif &filetype == 'java'
+                exec ":AsyncRun -raw=1 javac %"
+                exec ":AsyncRun -raw=1 java %<"
+            elseif &filetype == 'sh'
+                exec ":AsyncRun -raw=1 bash %"
+            elseif &filetype == 'perl'
+                exec ":AsyncRun -raw=1 perl %"
+            elseif &filetype == 'go'
+                exec ":AsyncRun -raw=1 go run %"
+            elseif &filetype == 'python'
+                if g:python_version == 3
+                    exec ":AsyncRun -raw=1 python3 %"
+                elseif g:python_version == 2
+                    exec ":AsyncRun -raw=1 python %"
+                else
+                    echo "Cannot run without python support"
+                endif
+            endif
+        endfunction
+        command! AsyncRunNow call s:ASYNC_RUN()
+        nnoremap <leader>r :AsyncRun
+        nnoremap <M-A> :AsyncRunNow<CR>
+        nnoremap <M-S> :AsyncStop<CR>
+        au bufenter * if (winnr("$") == 1 && exists("AsyncRun!")) | q | endif
+    endif
+  " }
+
+  " fzf {
+    " This is the default extra key bindings
+    nnoremap <localleader>fzf :call vimtex#fzf#run()<cr>
+    inoremap <expr> <c-x><c-x> fzf#vim#complete('cat /home/rax/supportfiles/words.txt')
+    nmap <C-p> :Files <CR>
+    nmap <C-[> :Buffers<CR>
+
+    let g:fzf_action = {
+          \ 'ctrl-t': 'tab split',
+          \ 'ctrl-x': 'split',
+          \ 'ctrl-v': 'vsplit' }
+
+    " Default fzf layout
+    " - down / up / left / right
+    let g:fzf_layout = { 'right': '~30%' }
+
+    " In Neovim, you can set up fzf window using a Vim command
+    " let g:fzf_layout = { 'window': 'enew' }
+    " let g:fzf_layout = { 'window': '-tabnew' }
+    " let g:fzf_layout = { 'window': '10split' }
+
+    " Customize fzf colors to match your color scheme
+    let g:fzf_colors =
+          \ { 'fg':      ['fg', 'Normal'],
+          \ 'bg':      ['bg', 'Normal'],
+          \ 'hl':      ['fg', 'Comment'],
+          \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+          \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+          \ 'hl+':     ['fg', 'Statement'],
+          \ 'info':    ['fg', 'PreProc'],
+          \ 'border':  ['fg', 'Ignore'],
+          \ 'prompt':  ['fg', 'Conditional'],
+          \ 'pointer': ['fg', 'Exception'],
+          \ 'marker':  ['fg', 'Keyword'],
+          \ 'spinner': ['fg', 'Label'],
+          \ 'header':  ['fg', 'Comment'] }
+
+    " Enable per-command history.
+    " CTRL-N and CTRL-P will be automatically bound to next-history and
+    " previous-history instead of down and up. If you don't like the change,
+    " explicitly bind the keys to down and up in your $FZF_DEFAULT_OPTS.
+    let g:fzf_history_dir = '~/.local/share/fzf-history'
+  " }
+
+  "languageTool {
+    let g:languagetool_jar='~/Programs/LanguageTool-4.5/languagetool-commandline.jar'
+    let g:languagetool_lang='en-US'
+    hi LanguageToolGrammarError  guisp=blue gui=undercurl guifg=NONE guibg=NONE ctermfg=white ctermbg=blue term=underline cterm=none
+    hi LanguageToolSpellingError guisp=red  gui=undercurl guifg=NONE guibg=NONE ctermfg=white ctermbg=red  term=underline cterm=none
+    nmap <leader>ck :LanguageToolCheck<cr><cr>
+  "}
+
+  " ctrlp {
+    " if HasDirectory("ctrlp.vim/")
+        " let g:ctrlp_working_path_mode = 'ra'
+        " nnoremap <silent> <D-t> :CtrlP<CR>
+        " nnoremap <silent> <D-r> :CtrlPMRU<CR>
+        " let g:ctrlp_custom_ignore = {
+                    " \ 'dir':  '\.git$\|\.hg$\|\.svn$',
+                    " \ 'file': '\.exe$\|\.so$\|\.dll$\|\.pyc$' }
+
+        " if executable('ag')
+            " let s:ctrlp_fallback = 'ag %s --nocolor -l -g ""'
+        " elseif executable('ack-grep')
+            " let s:ctrlp_fallback = 'ack-grep %s --nocolor -f'
+        " elseif executable('ack')
+            " let s:ctrlp_fallback = 'ack %s --nocolor -f'
+            " " On Windows use "dir" as fallback command.
+        " elseif WINDOWS()
+            " let s:ctrlp_fallback = 'dir %s /-n /b /s /a-d'
+        " else
+            " let s:ctrlp_fallback = 'find %s -type f'
+        " endif
+        " if exists("g:ctrlp_user_command")
+            " unlet g:ctrlp_user_command
+        " endif
+        " let g:ctrlp_user_command = {
+                    " \ 'types': {
+                    " \ 1: ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others'],
+                    " \ 2: ['.hg', 'hg --cwd %s locate -I .'],
+                    " \ },
+                    " \ 'fallback': s:ctrlp_fallback
+                    " \ }
+
+        " if HasDirectory("ctrlp-funky/")
+            " " CtrlP extensions
+            " let g:ctrlp_extensions = ['funky']
+
+            " "funky
+            " nnoremap <Leader>fu :CtrlPFunky<Cr>
+        " endif
+    " endif
+  "}
+
+  " Ctags {
+    " set tags=./tags;/,$VIM/.vimtags
+    " set tags=./.tags;,.tags
+    let Tlist_Auto_Open=1
+    set tags=tags;
+    " Make tags placed in .git/tags file available in all levels of a repository
+    let gitroot = substitute(system('git rev-parse --show-toplevel'), '[\n\r]', '', 'g')
+    if gitroot != ''
+        let &tags = &tags . ',' . gitroot . '/.git/tags'
+    endif
+  " }
+
+  " TagBar {
+    if HasDirectory("tagbar/")
+        " nnoremap <silent> <leader>tt :TagbarToggle<CR>
+        let g:tagbar_type_markdown = {
+                    \ 'ctagstype' : 'markdown',
+                    \ 'kinds' : ['h:headings'],
+                    \ 'sort' : 0
+                    \ }
+        map <silent> <F9> :TagbarToggle<cr>
+    endif
+  "}
+
+
+  " Fugitive {
+    if HasDirectory("vim-fugitive/")
+        nnoremap <silent> <leader>gs :Gstatus<CR>
+        nnoremap <silent> <leader>gd :Gdiff<CR>
+        nnoremap <silent> <leader>gc :Gcommit<CR>
+        nnoremap <silent> <leader>gb :Gblame<CR>
+        nnoremap <silent> <leader>gl :Glog<CR>
+        nnoremap <silent> <leader>gp :Git push<CR>
+        nnoremap <silent> <leader>gr :Gread<CR>
+        nnoremap <silent> <leader>gw :Gwrite<CR>
+        nnoremap <silent> <leader>ge :Gedit<CR>
+        " Mnemonic _i_nteractive
+        nnoremap <silent> <leader>gi :Git add -p %<CR>
+        nnoremap <silent> <leader>gg :SignifyToggle<CR>
+    endif
+  "}
+
+  " UndoTree {
+    if HasDirectory("undotree/")
+        nnoremap <Leader>u :UndotreeToggle<CR>
+        " If undotree is opened, it is likely one wants to interact with it.
+        let g:undotree_SetFocusWhenToggle=1
+    endif
+  " }
+
+  " Indentline {
+    let g:indentLine_fileType = ['c', 'cpp','tex','md','python','java']
+  " }
+  " " vim-airline {
+  " " Set configuration options for the statusline plugin vim-airline.
+  " " Use the powerline theme and optionally enable powerline symbols.
+  " " To use the symbols , , , , , , and .in the statusline
+  " " segments add the following to your .vimrc.before.local file:
+  " "   let g:airline_powerline_fonts=1
+  " " If the previous symbols do not render for you then install a
+  " " powerline enabled font.
+
+  " " See `:echo g:airline_theme_map` for some more choices
+  " " Default in terminal vim is 'dark'
+  " if HasDirectory("vim-airline-themes/")
+      " if !exists('g:airline_theme')
+          " let g:airline_theme = 'solarized'
+      " endif
+      " if !exists('g:airline_powerline_fonts')
+          " " Use the default set of separators with a few customizations
+          " let g:airline_left_sep='›'  " Slightly fancier than '>'
+          " let g:airline_right_sep='‹' " Slightly fancier than '<'
+      " endif
+
+      " let g:airline#extensions#tabline#enabled = 1
+      " " let g:airline#extensions#tabline#left_sep = ''
+      " " let g:airline#extensions#tabline#left_alt_sep = ''
+      " " let g:airline#extensions#tabline#formatter = 'unique_tail'
+  " endif
+  " " }
+" }
+
+
 

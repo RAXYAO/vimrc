@@ -57,7 +57,8 @@
         "'php', 'ruby', 'misc', 'javascript', 'html', 'terminal']
     endif
     let g:complete_snippet = 'ultisnips'  "neosnippet
-    let g:complete_engine = 'YCM'
+    " let g:complete_engine = 'YCM'
+    let g:complete_engine = 'asyncomplete'
     call add(plug_modules, complete_engine)
     function! HasModule(plug)
         return count(g:plug_modules, a:plug)
@@ -96,12 +97,12 @@
             Plug 'scrooloose/nerdtree'
             Plug 'tpope/vim-surround'
             Plug 'jiangmiao/auto-pairs'
-            Plug 'ctrlpvim/ctrlp.vim'
-            Plug 'tacahiroy/ctrlp-funky'
             Plug 'terryma/vim-multiple-cursors'
             Plug 'vim-scripts/matchit.zip'
             Plug 'Yggdroot/indentLine'
             Plug 'skywind3000/asyncrun.vim'
+            " Plug 'ctrlpvim/ctrlp.vim'
+            " Plug 'tacahiroy/ctrlp-funky'
             " Plug 'spf13/vim-colors'
             " Plug 'sheerun/vim-polyglot', {'branch': 'master'}
             " Plug 'sbdchd/neoformat', {'branch': 'master'}
@@ -144,8 +145,11 @@
             Plug 'junegunn/vim-easy-align'
             Plug 'vimwiki/vimwiki'
             Plug 'lervag/vimtex'
-            Plug 'SirVer/ultisnips'
             Plug 'honza/vim-snippets'
+            Plug 'SirVer/ultisnips'
+            Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+            Plug 'junegunn/fzf.vim' 
+            Plug 'dpelle/vim-LanguageTool'
             " Plug 'reedes/vim-textobj-quote'
             " Plug 'reedes/vim-litecorrect'
             " Plug 'reedes/vim-textobj-sentence'
